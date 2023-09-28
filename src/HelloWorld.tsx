@@ -1,56 +1,46 @@
-import {spring, staticFile} from 'remotion';
+import {spring, staticFile, useVideoConfig} from 'remotion';
 import {
 	AbsoluteFill,
 	Audio,
 	interpolate,
 	Sequence,
 	useCurrentFrame,
-	useVideoConfig,
 } from 'remotion';
-import {Logo} from './HelloWorld/Logo';
-import {Subtitle} from './HelloWorld/Subtitle';
 import {Title} from './HelloWorld/Title';
 import {z} from 'zod';
 import {zColor} from '@remotion/zod-types';
 
+
 export const myCompSchema = z.object({
 	titleText: z.string(),
 	titleColor: zColor(),
-	durationInFrames: z.number(),
-	backgroundImage: z.string(),
+	backgroundImages: z.array(z.string()), // Updated to an array of strings
 	audioTrack: z.string(),
 });
 
 export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
 	titleText: propOne,
 	titleColor: propTwo,
-	durationInFrames,
-	backgroundImage,
+	backgroundImages,
 	audioTrack,
 }) => {
+	const { fps, durationInFrames, width, height } = useVideoConfig();
 	const frame = useCurrentFrame();
-	const {fps} = useVideoConfig();
+	const numberOfImages = backgroundImages.length;
+	const framePerImage = durationInFrames / numberOfImages;
 
-	// Animate from 0 to 1 after 25 frames
-	const logoTranslationProgress = spring({
-		frame: frame - 25,
-		fps,
-		config: {
-			damping: 100,
-		},
-	});
-
-	// Move the logo up by 150 pixels once the transition starts
-	const logoTranslation = interpolate(
-		logoTranslationProgress,
-		[0, 1],
-		[0, -150]
+	// Calculate the index of the current background image
+	const currentImageIndex = Math.min(
+		Math.floor(frame / framePerImage),
+		numberOfImages - 1
 	);
+
+	const fadeOutStart = 360; 
 
 	// Fade out the animation at the end
 	const opacity = interpolate(
 		frame,
-		[durationInFrames - 25, durationInFrames - 15],
+		[fadeOutStart, fadeOutStart + 8],
 		[1, 0],
 		{
 			extrapolateLeft: 'clamp',
@@ -58,18 +48,12 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
 		}
 	);
 
-	// A <AbsoluteFill> is just a absolutely positioned <div>!
 	return (
-		<AbsoluteFill style={{backgroundColor: 'white', backgroundImage: `url("${staticFile(backgroundImage)}")`}}>
-			<AbsoluteFill style={{opacity}}>
-				{/* Sequences can shift the time for its children! */}
+		<AbsoluteFill style={{ backgroundColor: 'white', backgroundImage: `url("${staticFile(backgroundImages[currentImageIndex])}")` }}>
+			<AbsoluteFill style={{ opacity }}>
 				<Sequence from={0}>
 					<Title titleText={propOne} titleColor={propTwo} />
 				</Sequence>
-				{/* The subtitle will only enter on the 75th frame. */}
-				{/* <Sequence from={75}>
-					<Subtitle />
-				</Sequence> */}
 			</AbsoluteFill>
 			<Audio src={staticFile(audioTrack)} />
 		</AbsoluteFill>

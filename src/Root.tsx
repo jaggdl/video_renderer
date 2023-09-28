@@ -1,12 +1,7 @@
 import {Composition, staticFile} from 'remotion';
-import { getVideoMetadata } from "@remotion/media-utils";
-import { getInputProps } from "remotion";
 import { getAudioDurationInSeconds } from "@remotion/media-utils";
- 
-const inputProps = getInputProps();
 
 import {HelloWorld, myCompSchema} from './HelloWorld';
-import {Logo, myCompSchema2} from './HelloWorld/Logo';
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -30,8 +25,7 @@ export const RemotionRoot: React.FC = () => {
 				defaultProps={{
 					titleText: 'Error en producción sin backup reciente',
 					titleColor: '#000000',
-					backgroundImage: '/example.png',
-					durationInFrames: 240,
+					backgroundImages: ['/example.png', '/Cactus.png'],
 					audioTrack: '/item_track_example.wav'
 				}}
 				calculateMetadata={async ({ props }) => {
