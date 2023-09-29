@@ -1,4 +1,5 @@
 import {spring, staticFile, useVideoConfig} from 'remotion';
+import { preloadImage } from "@remotion/preload";
 import {
 	AbsoluteFill,
 	Audio,
@@ -29,13 +30,15 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
 	const numberOfImages = backgroundImages.length;
 	const framePerImage = durationInFrames / numberOfImages;
 
+	backgroundImages.forEach(bgImg => preloadImage(staticFile(bgImg)));
+
 	// Calculate the index of the current background image
 	const currentImageIndex = Math.min(
 		Math.floor(frame / framePerImage),
 		numberOfImages - 1
 	);
 
-	const fadeOutStart = 360; 
+	const fadeOutStart = 340; 
 
 	// Fade out the animation at the end
 	const opacity = interpolate(
