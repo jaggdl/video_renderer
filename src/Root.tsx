@@ -23,16 +23,29 @@ export const RemotionRoot: React.FC = () => {
 				// https://www.remotion.dev/docs/parametrized-rendering
 				schema={myCompSchema}
 				defaultProps={{
-					titleText: 'Error en producción sin backup reciente',
+					titleText:
+						'"En laarroyo siempre gana; no a través de la fuerza, pero a través de la persistencia" - Buddha',
 					titleColor: '#000000',
-					backgroundImages: ['/example.png', '/Cactus.png'],
-					audioTrack: '/item_track_example.wav'
+					backgroundImages: [
+						'/5_Unexpected_side_of_Granada,_surprise_me_with_a_unique_perspective..png',
+						'/A_futuristic_educational_session_promoting_AI_awareness_and_strategies_to_prevent_AI_dominance,_emphasizing_human_and_AI_interaction_0.png',
+					],
+					audioTrack:
+						'/track_Fomentar_la_colaboracin_en_lugar_de_la_competencia.wav',
+					width: 1024,
+					height: 1024,
 				}}
-				calculateMetadata={async ({ props }) => {
-					const audioDurationInSeconds = await getAudioDurationInSeconds(staticFile(props.audioTrack))
+				calculateMetadata={async ({props}) => {
+					const audioDurationInSeconds = await getAudioDurationInSeconds(
+						staticFile(props.audioTrack)
+					);
 
-		 			return {
-						durationInFrames: Math.ceil(audioDurationInSeconds * framesPerSecond)
+					return {
+						durationInFrames: Math.ceil(
+							audioDurationInSeconds * framesPerSecond
+						),
+						width: props.width,
+						height: props.height,
 					};
 				}}
 			/>

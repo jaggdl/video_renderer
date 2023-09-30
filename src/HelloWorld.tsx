@@ -1,22 +1,26 @@
+import React from 'react'
 import {spring, staticFile, useVideoConfig} from 'remotion';
-import { preloadImage } from "@remotion/preload";
 import {
 	AbsoluteFill,
 	Audio,
 	interpolate,
 	Sequence,
+	Img,
 	useCurrentFrame,
 } from 'remotion';
 import {Title} from './HelloWorld/Title';
 import {z} from 'zod';
 import {zColor} from '@remotion/zod-types';
 
+const fontPath = '/fonts/Open_Sans/OpenSans-Bold.ttf'
 
 export const myCompSchema = z.object({
 	titleText: z.string(),
 	titleColor: zColor(),
 	backgroundImages: z.array(z.string()), // Updated to an array of strings
 	audioTrack: z.string(),
+	height: z.number(),
+	width: z.number(),
 });
 
 export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
@@ -30,33 +34,53 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
 	const numberOfImages = backgroundImages.length;
 	const framePerImage = durationInFrames / numberOfImages;
 
-	backgroundImages.forEach(bgImg => preloadImage(staticFile(bgImg)));
-
-	// Calculate the index of the current background image
 	const currentImageIndex = Math.min(
 		Math.floor(frame / framePerImage),
 		numberOfImages - 1
 	);
 
-	const fadeOutStart = 340; 
+	const fadeOutStart = 270;  // Frames
+	const fadeInLength = 12;
+	const fadeInStart = 75;
 
 	// Fade out the animation at the end
-	const opacity = interpolate(
+	const titleEnterOpacity = interpolate(
 		frame,
-		[fadeOutStart, fadeOutStart + 8],
+		[fadeInStart, fadeInStart + fadeInLength],
+		[0, 1],
+		{
+			extrapolateLeft: 'extend',
+			extrapolateRight: 'clamp',
+		}  
+	)
+
+	const titleOutOpacity = interpolate(
+		frame,
+		[fadeOutStart, fadeOutStart + fadeInLength],
 		[1, 0],
 		{
 			extrapolateLeft: 'clamp',
-			extrapolateRight: 'clamp',
+			extrapolateRight: 'extend',
 		}
 	);
+	let opacity = titleEnterOpacity + titleOutOpacity; 
 
 	return (
-		<AbsoluteFill style={{ backgroundColor: 'white', backgroundImage: `url("${staticFile(backgroundImages[currentImageIndex])}")` }}>
-			<AbsoluteFill style={{ opacity }}>
-				<Sequence from={0}>
-					<Title titleText={propOne} titleColor={propTwo} />
-				</Sequence>
+		<AbsoluteFill>
+			<AbsoluteFill>
+				<Img
+					style={{
+						width: "100%",
+						height: "100%",
+						objectFit: "cover",
+					}}
+					src={staticFile(backgroundImages[currentImageIndex])}
+				/>
+    </AbsoluteFill>
+			<AbsoluteFill style={{ opacity, backdropFilter: 'blur(20px)' }}>
+					<Sequence from={fadeInStart - fadeInLength}>
+						<Title titleText={propOne} titleColor={propTwo} />
+					</Sequence> 
 			</AbsoluteFill>
 			<Audio src={staticFile(audioTrack)} />
 		</AbsoluteFill>

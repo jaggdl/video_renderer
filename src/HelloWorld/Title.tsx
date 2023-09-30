@@ -5,22 +5,23 @@ import {FONT_FAMILY} from './constants';
 const title: React.CSSProperties = {
 	fontFamily: FONT_FAMILY,
 	fontWeight: 'bold',
-	fontSize: 100,
+	fontSize: 72,
 	textAlign: 'center',
-	bottom: 32,
 	width: '100%',
+	padding: '12px',
 };
+
 const container: React.CSSProperties = {
-	fontFamily: FONT_FAMILY,
-	fontWeight: 'bold',
-	fontSize: 100,
-	textAlign: 'center',
 	position: 'absolute',
-	bottom: 132,
+	bottom: '50%',
+	transform: 'translateY(50%)',
 	width: '100%',
-	background: 'rgba(255, 255, 255, 0.5)',
-	backdropFilter: 'blur(10px)',
+	background: 'rgba(255, 255, 255, 0.3)',
+	// backdropFilter: 'blur(24px)',
+	boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)'
 };
+
+
 
 const word: React.CSSProperties = {
 	marginLeft: 10,
